@@ -1,5 +1,9 @@
-import random
+# IMPORTS -------------------------------------------------------------------------------------------------------
 
+import random
+import matplotlib.pyplot as plt
+
+# FUNCTIONS -----------------------------------------------------------------------------------------------------
 def Parlay(legs, percent, wager, startingBankroll, free):
 
     #Setup variables
@@ -62,14 +66,69 @@ def TrialSet(legs, percent, bankroll, wager):
             break
 
     if(bankrupt == 0):
-        print(f'Over the course of 1000 parlays, Account Balance: {bankroll2}')
+        #print(f'Over the course of 1000 parlays, Account Balance: {bankroll2}')
+        return bankroll2
     else:
-        print(f'It took {bankrupt} parlays to go bankrupt')
+        #print(f'It took {bankrupt} parlays to go bankrupt')
+        return 0
 
+# GRAPH SIMULATION ---------------------------------------------------------------------------------------------
+
+def simulator():
+    #Setup variables       
+    hitPercentage = "0"
+    legs = "2"
+    bankroll = "100"
+    wager = "1"
+
+    i = 0
+    legs = 2
+    bankroll = 100
+    wager = 1
+
+    ongoingBankrolls = []
+    hitPercentages = []
+
+    while legs < 6:
+        hitPercentage = 50
+        del ongoingBankrolls[:]
+        del hitPercentages[:]
+
+        while hitPercentage < 100:
+            trialRuns = 0
+            ongoingBankroll = 0
+
+            while trialRuns < 1000:
+                ongoingBankroll = ongoingBankroll + TrialSet(legs, hitPercentage, bankroll, wager)
+                trialRuns = trialRuns + 1
+            
+            #Add variables to our lists that will be indexed by the graphing tool
+            ongoingBankrolls.append(ongoingBankroll/trialRuns)
+            hitPercentages.append(hitPercentage)
+
+            hitPercentage = hitPercentage + 5
+
+        fig = plt.figure(figsize=(11, 5)) 
+        plt.bar(hitPercentages, ongoingBankrolls)
+        
+        plt.xlabel("Bet Hit Percentage")
+        plt.ylabel("Bankroll")
+        plt.title(str(legs) + " Leg Parlays Statistics")
+        
+        plt.show()
+
+        fig.savefig('Distributions/' + str(legs) + ' Leg Parlays.png')
+        plt.close()
+        
+        legs = legs + 1
+
+# MAIN USER IMPLEMENTATION -----------------------------------------------------------------------------------
 hitPercentage = input("Roughly what percentage of your bets do you hit: ")
 legs = input("How many legs are each parlay that you place (2-5) : ")
 bankroll = input("Enter how much money you are starting with: ")
 wager = input("Enter how much you wager per bet: ")
 
 TrialSet(legs, hitPercentage, bankroll, wager)
+
+    
 
